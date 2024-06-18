@@ -181,10 +181,8 @@
 		7C070A592C20D1CF001924A6 /* ToDoModul */ = {
 			isa = PBXGroup;
 			children = (
-				7C070A5A2C20D1F2001924A6 /* TasksViewController.swift */,
-				7CADD05E2C21E779006C198C /* TaskStore.swift */,
-				7CADD0602C21E797006C198C /* TasksUtility.swift */,
-				7CADD05C2C21E743006C198C /* Task.swift */,
+				7CADD0652C221F50006C198C /* Controllers */,
+				7CADD0662C221F64006C198C /* Model */,
 			);
 			path = ToDoModul;
 			sourceTree = "<group>";
@@ -195,6 +193,24 @@
 				7CADD0632C21F83D006C198C /* DetailViewController.swift */,
 			);
 			path = DetailModul;
+			sourceTree = "<group>";
+		};
+		7CADD0652C221F50006C198C /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				7C070A5A2C20D1F2001924A6 /* TasksViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		7CADD0662C221F64006C198C /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				7CADD05E2C21E779006C198C /* TaskStore.swift */,
+				7CADD0602C21E797006C198C /* TasksUtility.swift */,
+				7CADD05C2C21E743006C198C /* Task.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
