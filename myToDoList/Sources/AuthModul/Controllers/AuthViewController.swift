@@ -285,7 +285,7 @@ class AuthViewController: UIViewController {
             guard let self = self else {
                 return
             }
-                        
+            
             if let error = error {
                 print("Ошибка при входе в акк: \(error.localizedDescription)")
                 ShowAlert.shared.alert(

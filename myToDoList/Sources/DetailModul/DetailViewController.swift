@@ -12,7 +12,7 @@ protocol TaskUpdateDelegate: AnyObject {
 }
 
 class DetailViewController: UIViewController {
-
+    
     private var isEdit = Bool()
     private var image: Data? = nil
     
@@ -30,7 +30,7 @@ class DetailViewController: UIViewController {
             imageView = UIImageView(image: UIImage(data: imageData))
         } else {
             imageView = UIImageView(image: UIImage(systemName: "person.fill"))
-
+            
         }
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
@@ -195,22 +195,8 @@ class DetailViewController: UIViewController {
     
     private func setupLayout() {
         NSLayoutConstraint.activate([
-            viewContainer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            viewContainer.topAnchor.constraint(equalTo: view.topAnchor, constant: 130),
-            viewContainer.widthAnchor.constraint(equalToConstant: 250),
-            viewContainer.heightAnchor.constraint(equalToConstant: 250),
             
-            icon.centerXAnchor.constraint(equalTo: viewContainer.centerXAnchor),
-            icon.centerYAnchor.constraint(equalTo: viewContainer.centerYAnchor),
-            
-            icon.widthAnchor.constraint(equalToConstant: 250),
-            icon.heightAnchor.constraint(equalToConstant: 250),
-            
-            buttonOpenGallery.centerXAnchor.constraint(equalTo: viewContainer.centerXAnchor),
-            buttonOpenGallery.bottomAnchor.constraint(equalTo: textFieldStack.topAnchor, constant: -10),
-            
-            
-            textFieldStack.topAnchor.constraint(equalTo: viewContainer.bottomAnchor, constant: 60),
+            textFieldStack.topAnchor.constraint(equalTo: view.topAnchor, constant: 160),
             textFieldStack.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 11),
             textFieldStack.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -14),
             textFieldStack.heightAnchor.constraint(equalToConstant: 180),
@@ -221,6 +207,20 @@ class DetailViewController: UIViewController {
             
             editButton.widthAnchor.constraint(equalToConstant: 70),
             editButton.heightAnchor.constraint(equalToConstant: 30),
+            
+            viewContainer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            viewContainer.topAnchor.constraint(equalTo: textFieldStack.bottomAnchor, constant: 60),
+            viewContainer.widthAnchor.constraint(equalToConstant: 250),
+            viewContainer.heightAnchor.constraint(equalToConstant: 250),
+            
+            icon.centerXAnchor.constraint(equalTo: viewContainer.centerXAnchor),
+            icon.centerYAnchor.constraint(equalTo: viewContainer.centerYAnchor),
+            
+            icon.widthAnchor.constraint(equalToConstant: 250),
+            icon.heightAnchor.constraint(equalToConstant: 250),
+            
+            buttonOpenGallery.centerXAnchor.constraint(equalTo: viewContainer.centerXAnchor),
+            buttonOpenGallery.topAnchor.constraint(equalTo: viewContainer.bottomAnchor, constant: 20),
         ])
     }
     
@@ -248,21 +248,28 @@ class DetailViewController: UIViewController {
     }
     
     @objc func saveButtonTapped() {
-        guard let updatedTitle = textFieldName.text,
-              let updatedDescription = textFieldDescription.text,
-              let updatedImage = image,
-              let updatedDate = textFieldDate.text  else { return }
-         
-         task?.name = updatedTitle
-         task?.descriptionTask = updatedDescription
-         task?.date = updatedDate
-         task?.image = updatedImage
-         
-         if let updatedTask = task {
-             delegate?.didUpdateTask(updatedTask)
-         }
-     }
-
+        
+        if let updatedTitle = textFieldName.text, !updatedTitle.isEmpty {
+            task?.name = updatedTitle
+        }
+        
+        if let updatedDescription = textFieldDescription.text, !updatedDescription.isEmpty {
+            task?.descriptionTask = updatedDescription
+        }
+        
+        if let updatedImage = image, !updatedImage.isEmpty {
+            task?.image = updatedImage
+        }
+        
+        if let updatedDate = textFieldDate.text, !updatedDate.isEmpty {
+            task?.date = updatedDate
+        }
+        
+        if let updatedTask = task {
+            delegate?.didUpdateTask(updatedTask)
+        }
+    }
+    
     @objc private func editButtonPressed() {
         
         isEdit.toggle()

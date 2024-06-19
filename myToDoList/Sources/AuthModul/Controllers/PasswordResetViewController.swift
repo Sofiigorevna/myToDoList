@@ -78,7 +78,7 @@ class PasswordResetViewController: UIViewController {
             emailTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             emailTextField.widthAnchor.constraint(equalToConstant: 270),
             emailTextField.heightAnchor.constraint(equalToConstant: 40),
-    
+            
             resetPasswordButton.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 30),
             resetPasswordButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             resetPasswordButton.widthAnchor.constraint(equalToConstant: 100),
