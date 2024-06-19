@@ -14,11 +14,10 @@ class TasksViewController: UITableViewController {
     
     let cellId = "Cell"
     
-    
     var taskStore: TaskStore! {
         didSet {
             taskStore.tasks = TasksUtility.fetch() ?? [[Task](), [Task]()]
-            
+
             tableView.reloadData()
         }
     }
@@ -36,16 +35,12 @@ class TasksViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemIndigo
-        
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellId)
-        
         setupNavigationBar()
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         tableView.reloadData()
-        
     }
     
     // MARK: - Setup
@@ -96,7 +91,6 @@ class TasksViewController: UITableViewController {
             self.tableView.insertRows(at: [indexPath], with: .automatic)
             self.saveTasksToUserDefaults()
         }
-        
         
         addAction.isEnabled = false
         
