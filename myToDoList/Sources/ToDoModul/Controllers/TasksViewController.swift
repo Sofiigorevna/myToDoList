@@ -17,7 +17,7 @@ class TasksViewController: UITableViewController {
     var taskStore: TaskStore! {
         didSet {
             taskStore.tasks = TasksUtility.fetch() ?? [[Task](), [Task]()]
-
+            
             tableView.reloadData()
         }
     }
@@ -34,20 +34,25 @@ class TasksViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemIndigo
+        view.backgroundColor = .systemBackground
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellId)
-        setupNavigationBar()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         tableView.reloadData()
+        setupNavigationBar()
     }
+    
     
     // MARK: - Setup
     
     func setupNavigationBar() {
-        navigationController?.navigationBar.tintColor = .white
-        title = "myToDoList"
+        if let navigationController = navigationController {
+            let dynamicColor = UIColor { traitCollection in
+                return traitCollection.userInterfaceStyle == .dark ? UIColor.white : UIColor.black
+            }
+            navigationController.navigationBar.tintColor = dynamicColor
+        }
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             title: "Exit profile",

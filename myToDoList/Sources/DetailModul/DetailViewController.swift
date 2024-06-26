@@ -21,8 +21,69 @@ class DetailViewController: UIViewController {
     
     var task: Task?
     weak var delegate: TaskUpdateDelegate?
+    let dynamicColor = UIColor { traitCollection in
+        return traitCollection.userInterfaceStyle == .dark ? UIColor.white : UIColor.black
+    }
     
     // MARK: - Outlets
+    
+    private lazy var contentView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private lazy var contentViewForStack: UIView = {
+        let view = UIView()
+        view.backgroundColor = .black
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.showsVerticalScrollIndicator = true
+        scrollView.alwaysBounceVertical = true
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        return scrollView
+    }()
+    private let textFieldStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .vertical
+        stackView.spacing = 0
+        stackView.layer.cornerRadius = 10
+        stackView.layer.borderWidth = 0.5
+        stackView.layer.borderColor = UIColor.lightGray.cgColor
+        stackView.layer.masksToBounds = true
+        stackView.backgroundColor = .systemGray6
+        return stackView
+    }()
+    
+    lazy var nameTaskTextField: UITextField = {
+        let textField = UITextField()
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.text = task?.name
+        textField.placeholder = "Name task"
+        textField.autocapitalizationType = .words
+        textField.returnKeyType = .done
+        textField.autocapitalizationType = .words
+        textField.textColor = dynamicColor
+        textField.layer.borderWidth = 0.5
+        textField.layer.borderColor = UIColor.lightGray.cgColor
+        textField.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+        textField.tintColor = UIColor.systemGray
+        textField.autocapitalizationType = .none
+        textField.isUserInteractionEnabled = false
+        let image = UIImage(systemName: "person")
+        
+        if let image = image{
+            textField.setLeftIcon(image)
+        }
+        textField.setLeftPaddingPoints(10)
+        textField.setRightPaddingPoints(10)
+        return textField
+    }()
     
     private lazy var icon: UIImageView = {
         var imageView = UIImageView()
@@ -43,50 +104,11 @@ class DetailViewController: UIViewController {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Open Gallery", for: .normal)
+        button.backgroundColor = dynamicColor
         button.setTitleColor(.white, for: .normal)
         button.isHidden = true
         button.addTarget(self, action: #selector(openGalleryTapped), for: .touchUpInside)
         return button
-    }()
-    
-    private lazy var viewContainer: UIView = {
-        var view = UIView()
-        view.layer.cornerRadius = 20
-        view.clipsToBounds = true
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .systemGroupedBackground
-        return view
-    }()
-    
-    private lazy var textFieldStack: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [textFieldName,textFieldDate,textFieldDescription])
-        stack.axis = .vertical
-        stack.alignment = .center
-        stack.setCustomSpacing(2, after: textFieldName)
-        stack.setCustomSpacing(2, after: textFieldDate)
-        stack.setCustomSpacing(2, after: textFieldDescription)
-        stack.distribution = .fillEqually
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        return stack
-    }()
-    
-    private lazy var textFieldName: UITextField = {
-        let textField = UITextField()
-        textField.text = task?.name
-        textField.placeholder = "Name task"
-        textField.autocapitalizationType = .words
-        textField.keyboardType = .default
-        textField.textAlignment = .natural
-        textField.tintColor = .white
-        textField.isUserInteractionEnabled = false
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        
-        let image = UIImage(systemName: "person")
-        if let image = image{
-            textField.setLeftIcon(image)
-        }
-        
-        return textField
     }()
     
     private lazy var textFieldDate: UITextField = {
@@ -94,10 +116,17 @@ class DetailViewController: UIViewController {
         textField.text = task?.date
         textField.placeholder = "Date of completion"
         textField.textAlignment = .left
-        textField.tintColor = .white
         textField.keyboardType = .default
         textField.isUserInteractionEnabled = false
         textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.returnKeyType = .done
+        textField.textColor = dynamicColor
+        textField.layer.borderWidth = 0.5
+        textField.layer.borderColor = UIColor.lightGray.cgColor
+        textField.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+        textField.tintColor = UIColor.systemGray
+        textField.setLeftPaddingPoints(10)
+        textField.setRightPaddingPoints(10)
         
         let image = UIImage(systemName: "calendar")
         if let image = image{
@@ -112,10 +141,18 @@ class DetailViewController: UIViewController {
         textField.text = task?.descriptionTask
         textField.placeholder = "Task description"
         textField.textAlignment = .natural
-        textField.tintColor = .white
         textField.keyboardType = .default
         textField.isUserInteractionEnabled = false
         textField.translatesAutoresizingMaskIntoConstraints = false
+        
+        textField.returnKeyType = .done
+        textField.textColor = dynamicColor
+        textField.layer.borderWidth = 0.5
+        textField.layer.borderColor = UIColor.lightGray.cgColor
+        textField.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+        textField.tintColor = UIColor.systemGray
+        textField.setLeftPaddingPoints(10)
+        textField.setRightPaddingPoints(10)
         
         let image = UIImage(systemName: "person.2.circle")
         if let image = image{
@@ -146,13 +183,24 @@ class DetailViewController: UIViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        view.backgroundColor = .systemIndigo
-        setupNavigationBar()
+        //  setupNavigationBar()
         setupView()
         setupHierarhy()
         setupLayout()
         setupDatePickerDate()
+        prepareNavBar()
         self.hideKeyboardWhenTappedAround()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        scrollView.contentInsetAdjustmentBehavior = .never
+        scrollView.scrollIndicatorInsets = view.safeAreaInsets
+        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: view.safeAreaInsets.bottom, right: 0)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        setupNavigationBar()
     }
     
     // MARK: - Setup
@@ -160,6 +208,10 @@ class DetailViewController: UIViewController {
     private func setupNavigationBar() {
         lazy var buttonEdit = UIBarButtonItem(customView: editButton)
         navigationItem.rightBarButtonItem = buttonEdit
+        
+        if let navigationController = navigationController {
+            navigationController.navigationBar.tintColor = .white
+        }
     }
     
     private func setupDatePickerDate() {
@@ -183,45 +235,85 @@ class DetailViewController: UIViewController {
     }
     
     private func setupView() {
-        view.backgroundColor = .systemIndigo
+        view.backgroundColor = .black
     }
     
     private func setupHierarhy() {
-        view.addSubview(viewContainer)
-        viewContainer.addSubview(icon)
-        view.addSubview(buttonOpenGallery)
-        view.addSubview(textFieldStack)
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        scrollView.addSubview(icon)
+        scrollView.addSubview(contentViewForStack)
+        contentViewForStack.addSubview(textFieldStackView)
+        
+        textFieldStackView.addArrangedSubview(buttonOpenGallery)
+        textFieldStackView.addArrangedSubview(nameTaskTextField)
+        textFieldStackView.addArrangedSubview(textFieldDate)
+        textFieldStackView.addArrangedSubview(textFieldDescription)
     }
     
     private func setupLayout() {
         NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            scrollView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             
-            textFieldStack.topAnchor.constraint(equalTo: view.topAnchor, constant: 160),
-            textFieldStack.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 11),
-            textFieldStack.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -14),
-            textFieldStack.heightAnchor.constraint(equalToConstant: 180),
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            contentView.heightAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.7),
             
-            textFieldName.widthAnchor.constraint(equalToConstant: 355),
-            textFieldDate.widthAnchor.constraint(equalToConstant: 355),
-            textFieldDescription.widthAnchor.constraint(equalToConstant: 355),
+            icon.topAnchor.constraint(equalTo: view.topAnchor),
+            icon.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            icon.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            icon.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            
+            contentViewForStack.topAnchor.constraint(equalTo: contentView.bottomAnchor),
+            contentViewForStack.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            contentViewForStack.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            contentViewForStack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            
+            textFieldStackView.topAnchor.constraint(equalTo: contentViewForStack.topAnchor, constant: 14),
+            textFieldStackView.leadingAnchor.constraint(equalTo: contentViewForStack.leadingAnchor, constant: 14),
+            textFieldStackView.trailingAnchor.constraint(equalTo: contentViewForStack.trailingAnchor, constant: -14),
+            textFieldStackView.bottomAnchor.constraint(equalTo: contentViewForStack.bottomAnchor, constant: -14),
+            
+            buttonOpenGallery.heightAnchor.constraint(equalToConstant: 50),
+            nameTaskTextField.heightAnchor.constraint(equalToConstant: 50),
+            textFieldDate.heightAnchor.constraint(equalToConstant: 50),
+            textFieldDescription.heightAnchor.constraint(equalToConstant: 50),
             
             editButton.widthAnchor.constraint(equalToConstant: 70),
             editButton.heightAnchor.constraint(equalToConstant: 30),
-            
-            viewContainer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            viewContainer.topAnchor.constraint(equalTo: textFieldStack.bottomAnchor, constant: 60),
-            viewContainer.widthAnchor.constraint(equalToConstant: 250),
-            viewContainer.heightAnchor.constraint(equalToConstant: 250),
-            
-            icon.centerXAnchor.constraint(equalTo: viewContainer.centerXAnchor),
-            icon.centerYAnchor.constraint(equalTo: viewContainer.centerYAnchor),
-            
-            icon.widthAnchor.constraint(equalToConstant: 250),
-            icon.heightAnchor.constraint(equalToConstant: 250),
-            
-            buttonOpenGallery.centerXAnchor.constraint(equalTo: viewContainer.centerXAnchor),
-            buttonOpenGallery.topAnchor.constraint(equalTo: viewContainer.bottomAnchor, constant: 20),
         ])
+    }
+    
+    private func prepareNavBar() {
+        let navigationBarAppearance = UINavigationBarAppearance()
+        navigationBarAppearance.configureWithTransparentBackground()
+        
+        navigationController?.navigationBar.tintColor = .systemBackground
+        
+        navigationItem.scrollEdgeAppearance = navigationBarAppearance
+        navigationItem.standardAppearance = navigationBarAppearance
+        navigationItem.compactAppearance = navigationBarAppearance
+    }
+    
+    //MARK: — Status Bar Appearance
+    
+    private var shouldHideStatusBar: Bool {
+        let frame = contentViewForStack.convert(contentViewForStack.bounds, to: nil)
+        return frame.minY < view.safeAreaInsets.top
+    }
+    
+    override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+        return .slide
+    }
+    
+    override var prefersStatusBarHidden: Bool {
+        return shouldHideStatusBar
     }
     
     // MARK: - Actions
@@ -233,7 +325,6 @@ class DetailViewController: UIViewController {
         imagepicker.allowsEditing = true
         imagepicker.sourceType = .savedPhotosAlbum
         present(imagepicker, animated: true)
-        
     }
     
     @objc private func doneAction() {
@@ -249,7 +340,7 @@ class DetailViewController: UIViewController {
     
     @objc func saveButtonTapped() {
         
-        if let updatedTitle = textFieldName.text, !updatedTitle.isEmpty {
+        if let updatedTitle = nameTaskTextField.text, !updatedTitle.isEmpty {
             task?.name = updatedTitle
         }
         
@@ -279,8 +370,8 @@ class DetailViewController: UIViewController {
             
             buttonOpenGallery.isHidden = false
             
-            textFieldName.isUserInteractionEnabled = true
-            textFieldName.borderStyle = .bezel
+            nameTaskTextField.isUserInteractionEnabled = true
+            nameTaskTextField.borderStyle = .bezel
             
             textFieldDate.isUserInteractionEnabled = true
             textFieldDate.borderStyle = .bezel
@@ -294,8 +385,8 @@ class DetailViewController: UIViewController {
             
             buttonOpenGallery.isHidden = true
             
-            textFieldName.isUserInteractionEnabled = false
-            textFieldName.borderStyle = .none
+            nameTaskTextField.isUserInteractionEnabled = false
+            nameTaskTextField.borderStyle = .none
             
             textFieldDate.isUserInteractionEnabled = false
             textFieldDate.borderStyle = .none
@@ -303,7 +394,7 @@ class DetailViewController: UIViewController {
             textFieldDescription.isUserInteractionEnabled = false
             textFieldDescription.borderStyle = .none
             
-            guard let personName = textFieldName.text,
+            guard let personName = nameTaskTextField.text,
                   !personName.isEmpty else {
                 ShowAlert.shared.alert(view: self, title: "Sorry", message: "Please enter the name in textfield", completion: nil)
                 return
@@ -312,6 +403,22 @@ class DetailViewController: UIViewController {
         }
     }
 }
+
+extension DetailViewController: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        var previousStatusBarHidden = false
+        
+        if  previousStatusBarHidden != shouldHideStatusBar {
+            
+            UIView.animate(withDuration: 0.2, animations: {
+                self.setNeedsStatusBarAppearanceUpdate()
+            })
+            previousStatusBarHidden = shouldHideStatusBar
+        }
+    }
+}
+
+
 
 extension DetailViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
