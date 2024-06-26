@@ -181,9 +181,7 @@ class DetailViewController: UIViewController {
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
-        
         super.viewDidLoad()
-        //  setupNavigationBar()
         setupView()
         setupHierarhy()
         setupLayout()
